@@ -2,7 +2,7 @@
   "profiles": {
     "FesteloNetBOT": {
       "commandName": "Project",
-      "commandLineArgs": "work"
+      "commandLineArgs": "show"
     }
   }
 }

@@ -13,9 +13,9 @@ namespace FesteloNetBOT
     {
         public static class URLs
         {
-            public static string CSGO500 = @"http://csgo500.com/";
-            public static string CSGO500Reward = @"http://csgo500.com/reward/";
-            public static string CSGO500Transfer = @"http://csgo500.com/transfer/";
+            public static string CSGO500 = @"https://csgo500.com/";
+            public static string CSGO500Reward = @"https://csgo500.com/reward/";
+            public static string CSGO500Transfer = @"https://csgo500.com/transfer/";
         }
 
         public static string GetData(string url, string cookie)
@@ -50,7 +50,7 @@ namespace FesteloNetBOT
             {
                 var values = new Dictionary<string, string>
                 {
-                    { "_csrf", "csrf" }
+                    { "_csrf", csrf }
                 };
                 if (addData != null)
                     foreach (var s in addData)

@@ -48,13 +48,15 @@ namespace FesteloNetBOT
                 User newUser = Internet.Parse.User(html);
                 if (user.Withdraw)
                 {
-                    status = Internet.SendData(Internet.URLs.CSGO500Transfer, user.Cookie, token, 
-                        new Dictionary<string, string> { { "value", newUser.Balance.ToString() }});
+                    status = Internet.SendData(Internet.URLs.CSGO500Transfer, user.Cookie, token,
+                        new Dictionary<string, string> { { "value", newUser.Balance.ToString() } });
                     if (status == 200)
                         newUser.Balance = 0;
+                    else { Console.WriteLine($"Error in sending request. HTTPERROR: {status}"); }
                 }
                 return newUser;
             }
+            else { Console.WriteLine($"Error in sending request. HTTPERROR: {status}"); }
             return null;
         }
     }

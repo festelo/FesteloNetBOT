@@ -58,7 +58,14 @@ namespace FesteloNetBOT.Arguments
             }
 
             public void ManuallyArg()
-            { }
+            {
+                foreach (User u in dataBase.Users)
+                    if (args.ManuallyArg.Contains(u.Id))
+                    {
+                        Console.WriteLine($"Id: {u.Id}, name: {u.Name}. Send request");
+                        FesteloNetBOT.Work.GetReward(u);
+                    }
+            }
         }
         public class Show
         {
@@ -73,14 +80,20 @@ namespace FesteloNetBOT.Arguments
             {
                 foreach (User u in dataBase.Users)
                 {
-                    string message = $"{u.Id}: Name: {u.Name} | Balance: {u.Balance} | Reward Date: {u.Time} UTC";
-                    if (args.FullArg) message += $"\nWithdraw: {u.Withdraw} | Cookie: {u.Cookie}\n";
-                    Console.WriteLine(message);
+                    Console.WriteLine(u.ToString(args.FullArg));
                 }
-                ;
             }
             public void Live()
             {
+                foreach (User u in dataBase.Users)
+                {
+                    if (args.LiveArg.Contains(u.Id))
+                    {
+                        string html = Internet.GetData(Internet.URLs.CSGO500, u.Cookie);
+                        User user = Internet.Parse.User(html);
+                        Console.WriteLine(user.ToString(args.FullArg));
+                    }
+                }
             }
         }
         public class Set
@@ -135,6 +148,21 @@ namespace FesteloNetBOT.Arguments
 
             private void Refresh()
             {
+                bool save = false;
+                foreach (User u in dataBase.Users)
+                {
+                    if (args.RefreshArg.Contains(u.Id))
+                    {
+                        string html = Internet.GetData(Internet.URLs.CSGO500, u.Cookie);
+                        User user = Internet.Parse.User(html);
+                        u.Update(user);
+                    }
+                }
+                if (save)
+                {
+                    int rows = dataBase.SaveChanges();
+                    Console.WriteLine($"Changed {rows} rows");
+                }
             }
 
             private void Withdraw()

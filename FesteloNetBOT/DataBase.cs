@@ -36,6 +36,16 @@ namespace FesteloNetBOT
             Balance = user.Balance;
             Time = user.Time;
         }
+        public override string ToString()
+        {
+            return ToString(false);
+        }
+        public string ToString(bool full = false)
+        {
+            string ret = $"{Id}: Name: {Name} | Balance: {Balance} | Reward Date: {Time} UTC";
+            if (full) ret += $"\nWithdraw: {Withdraw} | Cookie: {Cookie}\n";
+            return ret;
+        }
     }
 
 }
