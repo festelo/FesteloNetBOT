@@ -26,9 +26,16 @@ namespace FesteloNetBOT
     {
         public int Id { get; set; }
         public int Balance { get; set; }
+        public string Name { get; set; }
         public string Cookie { get; set; }
-        public string Time { get; set; }
-        public bool Withdraw { get; set; }
+        public DateTime Time { get; set; }
+        public bool Withdraw { get; set; } = false;
+
+        public void Update(User user)
+        {
+            Balance = user.Balance;
+            Time = user.Time;
+        }
     }
 
 }

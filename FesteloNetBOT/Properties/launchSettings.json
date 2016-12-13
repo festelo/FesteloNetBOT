@@ -2,7 +2,7 @@
   "profiles": {
     "FesteloNetBOT": {
       "commandName": "Project",
-      "commandLineArgs": "set -n Здравствуйте \"Добрый день\" \"Как дела?\" Кажется дождь начинается"
+      "commandLineArgs": "work"
     }
   }
 }
