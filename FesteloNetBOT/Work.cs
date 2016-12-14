@@ -17,22 +17,29 @@ namespace FesteloNetBOT
         {
             while(true)
             {
-                bool save = false;
-                foreach (User u in dataBase.Users)
+                List<Tuple<User, User>> toEdit = new List<Tuple<User, User>>();
+                try
                 {
-                    if (DateTime.UtcNow >= u.Time)
-                    {
-                        User newUser = GetReward(u);
-                        if (newUser != null)
+                    foreach (User u in dataBase.Users)
+                    { 
+                        if (DateTime.UtcNow >= u.Time)
                         {
-                            u.Update(newUser);
+                            User newUser = GetReward(u);
+                            if (newUser != null)
+                            {
+                                toEdit.Add(Tuple.Create(u, newUser));
+                            }
                         }
-                        save = true;
                     }
                 }
-                if (save)
+                catch (Exception err) { Console.WriteLine($"Error in sending request.\nCheck connection! MSG: {err.Message}\n"); }
+                foreach (var obj in toEdit)
+                {
+                    obj.Item1.Update(obj.Item2);
+                }
+                if (toEdit.Count != 0)
                     dataBase.SaveChanges();
-                Thread.Sleep(2000);
+                Thread.Sleep(120000);
             }
         }
 
@@ -41,11 +48,14 @@ namespace FesteloNetBOT
             string html = Internet.GetData(Internet.URLs.CSGO500, user.Cookie);
             string token = Internet.Parse.CSRF(html);
             int status = Internet.SendData(Internet.URLs.CSGO500Reward, user.Cookie, token);
+
+
+            html = Internet.GetData(Internet.URLs.CSGO500, user.Cookie);
+            User newUser = Internet.Parse.User(html);
+
             if (status == 200)
             {
                 Console.WriteLine($"Succesfull send request to CSGO500.com. Nick: {user.Name}");
-                html = Internet.GetData(Internet.URLs.CSGO500, user.Cookie);
-                User newUser = Internet.Parse.User(html);
                 if (user.Withdraw)
                 {
                     status = Internet.SendData(Internet.URLs.CSGO500Transfer, user.Cookie, token,
@@ -54,10 +64,9 @@ namespace FesteloNetBOT
                         newUser.Balance = 0;
                     else { Console.WriteLine($"Error in sending request. HTTPERROR: {status}"); }
                 }
-                return newUser;
             }
-            else { Console.WriteLine($"Error in sending request. HTTPERROR: {status}"); }
-            return null;
+            else { Console.WriteLine($"Error in sending request. Check cookie. HTTPERROR: {status}"); }
+            return newUser;
         }
     }
 }
