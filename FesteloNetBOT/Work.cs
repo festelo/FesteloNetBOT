@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
@@ -8,6 +9,7 @@ namespace FesteloNetBOT
 {
     class Work
     {
+        static ILogger log = Log.CreateLogger<Work>();
         public Work()
         {
             CheckToReward();
@@ -32,7 +34,7 @@ namespace FesteloNetBOT
                         }
                     }
                 }
-                catch (Exception err) { Console.WriteLine($"Error in sending request.\nCheck connection! MSG: {err.Message}\n"); }
+                catch (Exception err) { log.LogWarning($"Error in sending requests to reward. ERROR: {err.Message}"); }
                 foreach (var obj in toEdit)
                 {
                     obj.Item1.Update(obj.Item2);
@@ -45,6 +47,7 @@ namespace FesteloNetBOT
 
         public static User GetReward(User user)
         {
+            log.LogInformation($"Getting reward. ID: {user.Id}, Nick: {user.Name}");
             string html = Internet.GetData(Internet.URLs.CSGO500, user.Cookie);
             string token = Internet.Parse.CSRF(html);
             int status = Internet.SendData(Internet.URLs.CSGO500Reward, user.Cookie, token);
@@ -55,17 +58,18 @@ namespace FesteloNetBOT
 
             if (status == 200)
             {
-                Console.WriteLine($"Succesfull send request to CSGO500.com. Nick: {user.Name}");
+                log.LogInformation($"Succesfull getted reward. ID: {user.Id}, Nick: {user.Name}");
                 if (user.Withdraw)
                 {
+                    log.LogInformation($"Sending reward to SkinX. ID: {user.Id}, Nick: {user.Name}");
                     status = Internet.SendData(Internet.URLs.CSGO500Transfer, user.Cookie, token,
                         new Dictionary<string, string> { { "value", newUser.Balance.ToString() } });
                     if (status == 200)
                         newUser.Balance = 0;
-                    else { Console.WriteLine($"Error in sending request. HTTPERROR: {status}"); }
+                    else { log.LogWarning($"Error in sending reward. HTTPERROR: {status}, ID: {user.Id}, Nick: {user.Name}"); }
                 }
             }
-            else { Console.WriteLine($"Error in sending request. Check cookie. HTTPERROR: {status}"); }
+            else { log.LogWarning($"Error in getting reward. HTTPERROR: {status}, ID: {user.Id}, Nick: {user.Name}"); }
             return newUser;
         }
     }

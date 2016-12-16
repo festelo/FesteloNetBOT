@@ -1,6 +1,7 @@
 ﻿using CommandLine;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using static FesteloNetBOT.DataBase;
 
@@ -54,7 +55,10 @@ namespace FesteloNetBOT.Arguments
             {
                 this.args = args;
                 if (args.ManuallyArg.Count != 0) ManuallyArg();
-                else new FesteloNetBOT.Work();
+                else
+                {
+                    new FesteloNetBOT.Work();
+                }
             }
 
             public void ManuallyArg()
